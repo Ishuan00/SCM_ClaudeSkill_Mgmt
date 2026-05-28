@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCM Claude Skill Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;
+  --surface:#ffffff;
+  --card:#ffffff;
+  --card-hover:#f8fafc;
+  --border:#e2e8f0;
+  --border-light:#cbd5e1;
+  --accent:#0ea5a0;
+  --accent-dim:#0c9490;
+  --accent-glow:rgba(14,165,160,0.08);
+  --accent-soft:rgba(14,165,160,0.12);
+  --amber:#d97706;
+  --amber-dim:rgba(217,119,6,0.1);
+  --red:#dc2626;
+  --red-dim:rgba(220,38,38,0.08);
+  --blue:#2563eb;
+  --blue-dim:rgba(37,99,235,0.08);
+  --purple:#7c3aed;
+  --purple-dim:rgba(124,58,237,0.08);
+  --txt:#1e293b;
+  --txt-sec:#64748b;
+  --txt-muted:#94a3b8;
+  --font-head:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --r:10px;
+  --r-lg:14px;
+  --r-xl:18px;
+  --trans:all 0.2s ease;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:0 10px 32px rgba(0,0,0,0.12),0 4px 8px rgba(0,0,0,0.06);
+}
+body{font-family:var(--font-body);background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#f1f5f9}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* ── Header ── */
+.site-header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;
+  display:flex;align-items:center;gap:2rem;
+  height:62px;
+  box-shadow:0 1px 0 rgba(0,0,0,0.05);
+}
+.logo{
+  font-family:var(--font-head);font-size:1.1rem;font-weight:800;
+  color:var(--accent);letter-spacing:-0.02em;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;
+}
+.logo-icon{
+  width:30px;height:30px;background:var(--accent);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:0.85rem;
+  flex-shrink:0;
+}
+.nav-tabs{display:flex;gap:4px;flex:1}
+.nav-tab{
+  font-family:var(--font-body);font-size:0.875rem;font-weight:500;
+  color:var(--txt-sec);background:none;border:none;cursor:pointer;
+  padding:8px 16px;border-radius:var(--r);transition:var(--trans);
+}
+.nav-tab:hover{color:var(--txt);background:#f1f5f9}
+.nav-tab.active{color:var(--accent);background:var(--accent-soft);font-weight:600}
+.header-badge{
+  font-family:var(--font-mono);font-size:0.7rem;
+  background:var(--accent-soft);color:var(--accent);
+  padding:4px 12px;border-radius:99px;border:1px solid rgba(14,165,160,0.2);
+  font-weight:500;
+}
+
+/* ── Pages ── */
+.page{display:none;animation:fadeIn 0.22s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.page-inner{max-width:980px;margin:0 auto;padding:2.5rem 2rem}
+.page-title{font-family:var(--font-head);font-size:1.65rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:0.35rem;color:var(--txt)}
+.page-title span{color:var(--accent)}
+.page-sub{font-size:0.875rem;color:var(--txt-sec);margin-bottom:2rem}
+
+/* ── Form ── */
+.form-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:1.75rem 2rem;margin-bottom:1.25rem;
+  box-shadow:var(--shadow);
+}
+.form-section-title{
+  font-family:var(--font-head);font-size:0.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.1em;color:var(--txt-muted);
+  margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;
+}
+.form-section-title span{
+  background:var(--accent-soft);color:var(--accent);
+  width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;flex-shrink:0;
+}
+.form-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.form-grid.full{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{
+  font-size:0.8rem;font-weight:600;color:var(--txt);
+  display:flex;align-items:center;gap:6px;
+}
+.tooltip-wrap{position:relative;display:inline-flex}
+.tooltip-btn{
+  width:16px;height:16px;border-radius:50%;
+  border:1.5px solid var(--border-light);background:#f8fafc;
+  color:var(--txt-muted);font-size:0.62rem;font-weight:700;
+  cursor:default;display:inline-flex;align-items:center;justify-content:center;
+  transition:var(--trans);flex-shrink:0;line-height:1;
+}
+.tooltip-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.tooltip-box{
+  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:#1e293b;border-radius:var(--r);
+  padding:8px 12px;font-size:0.74rem;color:#f1f5f9;line-height:1.5;
+  pointer-events:none;opacity:0;transition:opacity 0.15s ease;z-index:200;
+  min-width:180px;max-width:280px;white-space:normal;
+  box-shadow:var(--shadow-md);
+}
+.tooltip-box::after{
+  content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:#1e293b;
+}
+.tooltip-wrap:hover .tooltip-box{opacity:1}
+
+.form-input,.form-select,.form-textarea{
+  background:#f8fafc;border:1.5px solid var(--border);
+  border-radius:var(--r);padding:0 12px;height:40px;
+  color:var(--txt);font-family:var(--font-body);font-size:0.875rem;
+  transition:var(--trans);width:100%;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(14,165,160,0.1);
+  background:#fff;
+}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--txt-muted)}
+.form-input.readonly-id{
+  font-family:var(--font-mono);font-size:0.78rem;color:var(--accent);
+  background:var(--accent-soft);border-color:rgba(14,165,160,0.25);
+  cursor:not-allowed;font-weight:500;
+}
+.form-textarea{height:88px;padding:10px 12px;resize:vertical;line-height:1.6}
+.form-textarea.tall{height:110px}
+.form-select{
+  cursor:pointer;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+}
+
+/* ── File Upload ── */
+.file-upload{
+  border:1.5px dashed var(--border-light);border-radius:var(--r);
+  background:#f8fafc;padding:14px 16px;text-align:center;cursor:pointer;
+  transition:var(--trans);position:relative;
+}
+.file-upload:hover{border-color:var(--accent);background:var(--accent-soft)}
+.file-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-upload-icon{font-size:1.2rem;color:var(--txt-muted);margin-bottom:4px}
+.file-upload-text{font-size:0.78rem;color:var(--txt-sec);font-weight:500}
+.file-upload-hint{font-size:0.68rem;color:var(--txt-muted);margin-top:2px}
+.file-preview{margin-top:8px;display:none;align-items:center;gap:6px;font-size:0.76rem;color:var(--accent);font-weight:500}
+
+/* ── Tag Dropdown ── */
+.tag-dropdown{position:relative}
+.tag-dropdown-trigger{
+  background:#f8fafc;border:1.5px solid var(--border);border-radius:var(--r);
+  height:40px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;font-size:0.85rem;color:var(--txt-sec);transition:var(--trans);
+}
+.tag-dropdown-trigger:hover{border-color:var(--border-light);background:#fff}
+.tag-dropdown-menu{
+  position:absolute;top:100%;left:0;right:0;margin-top:4px;
+  background:#fff;border:1.5px solid var(--border);border-radius:var(--r);
+  overflow:hidden;z-index:150;display:none;
+  box-shadow:var(--shadow-lg);
+}
+.tag-dropdown-menu.open{display:block}
+.tag-dropdown-option{
+  padding:9px 14px;font-size:0.84rem;color:var(--txt-sec);cursor:pointer;transition:background 0.1s;
+}
+.tag-dropdown-option:hover{background:#f0f9f9;color:var(--accent)}
+.tags-display{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--accent-soft);border:1px solid rgba(14,165,160,0.2);
+  color:var(--accent);font-size:0.75rem;padding:4px 10px;border-radius:99px;font-weight:500;
+}
+.tag-chip.amber{background:var(--amber-dim);border-color:rgba(217,119,6,0.2);color:var(--amber)}
+.tag-chip .remove{cursor:pointer;opacity:0.6;font-size:0.68rem}
+.tag-chip .remove:hover{opacity:1}
+
+/* ── Buttons ── */
+.btn-submit{
+  font-family:var(--font-body);font-size:0.9rem;font-weight:600;
+  background:var(--accent);color:#fff;border:none;
+  border-radius:var(--r);padding:11px 28px;cursor:pointer;
+  transition:var(--trans);display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 2px 8px rgba(14,165,160,0.3);
+}
+.btn-submit:hover{background:var(--accent-dim);transform:translateY(-1px);box-shadow:0 4px 16px rgba(14,165,160,0.35)}
+.btn-submit:active{transform:translateY(0)}
+.btn-secondary{
+  font-family:var(--font-body);font-size:0.875rem;font-weight:500;
+  background:#fff;border:1.5px solid var(--border-light);color:var(--txt-sec);
+  border-radius:var(--r);padding:10px 20px;cursor:pointer;transition:var(--trans);
+}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:1.5rem}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:999;
+  background:#fff;border:1px solid rgba(14,165,160,0.25);
+  border-radius:var(--r-lg);padding:14px 20px;
+  display:flex;align-items:center;gap:12px;font-size:0.875rem;color:var(--txt);
+  box-shadow:var(--shadow-lg);
+  transform:translateY(16px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-icon{
+  width:24px;height:24px;background:var(--accent-soft);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:0.8rem;flex-shrink:0;
+}
+
+/* ── Search Page ── */
+.search-top{display:flex;gap:10px;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.search-box{
+  flex:1;min-width:220px;
+  background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);
+  display:flex;align-items:center;gap:8px;padding:0 14px;height:44px;
+  box-shadow:var(--shadow);transition:var(--trans);
+}
+.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,165,160,0.1)}
+.search-box input{
+  flex:1;background:none;border:none;outline:none;
+  color:var(--txt);font-family:var(--font-body);font-size:0.875rem;
+}
+.search-box input::placeholder{color:var(--txt-muted)}
+.search-box svg{color:var(--txt-muted);flex-shrink:0}
+.sort-select{
+  background:#fff;border:1.5px solid var(--border);border-radius:var(--r);
+  color:var(--txt);font-family:var(--font-body);font-size:0.82rem;
+  padding:0 32px 0 12px;height:44px;cursor:pointer;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+  box-shadow:var(--shadow);transition:var(--trans);
+}
+.sort-select:focus{outline:none;border-color:var(--accent)}
+.view-toggle{
+  display:flex;gap:2px;background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r);padding:3px;box-shadow:var(--shadow);
+}
+.view-btn{
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  border:none;border-radius:7px;background:none;color:var(--txt-muted);
+  cursor:pointer;transition:var(--trans);
+}
+.view-btn.active{background:var(--accent-soft);color:var(--accent)}
+.view-btn svg{width:15px;height:15px}
+
+/* ── Filters ── */
+.filter-bar{display:flex;gap:7px;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.filter-label{font-size:0.74rem;color:var(--txt-muted);font-weight:600;white-space:nowrap}
+.filter-btn{
+  font-size:0.76rem;font-weight:500;padding:5px 12px;border-radius:99px;
+  border:1.5px solid var(--border);background:#fff;color:var(--txt-sec);cursor:pointer;transition:var(--trans);
+}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.stats-bar{display:flex;gap:1.5rem;margin-bottom:1.25rem}
+.stat-item{font-size:0.8rem;color:var(--txt-muted)}
+.stat-item span{color:var(--txt);font-weight:600}
+
+/* ── Skill Cards ── */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.skill-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-xl);padding:1.25rem;cursor:pointer;
+  transition:all 0.22s ease;position:relative;overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.skill-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,165,160,0.12)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem}
+.skill-icon{
+  width:40px;height:40px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;
+}
+.card-badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.badge{font-size:0.67rem;font-weight:600;padding:3px 9px;border-radius:6px;border:1px solid}
+.badge-teal{background:var(--accent-soft);border-color:rgba(14,165,160,0.2);color:var(--accent)}
+.badge-amber{background:var(--amber-dim);border-color:rgba(217,119,6,0.2);color:var(--amber)}
+.badge-blue{background:var(--blue-dim);border-color:rgba(37,99,235,0.18);color:var(--blue)}
+.card-title{font-family:var(--font-head);font-size:0.95rem;font-weight:700;margin-bottom:4px;letter-spacing:-0.01em;color:var(--txt)}
+.card-id{font-family:var(--font-mono);font-size:0.68rem;color:var(--txt-muted);margin-bottom:8px}
+.card-desc{font-size:0.8rem;color:var(--txt-sec);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border)}
+.card-meta{font-size:0.74rem;color:var(--txt-muted);display:flex;align-items:center;gap:12px}
+.card-meta-item{display:flex;align-items:center;gap:3px}
+.card-creator{font-size:0.74rem;color:var(--txt-muted);display:flex;align-items:center;gap:5px}
+.avatar-sm{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:700;flex-shrink:0}
+
+/* ── List View ── */
+.skills-list{display:flex;flex-direction:column;gap:6px}
+.skill-row{
+  background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);
+  padding:0.875rem 1.25rem;cursor:pointer;transition:all 0.18s ease;
+  display:grid;grid-template-columns:40px 1fr auto auto auto auto;
+  align-items:center;gap:1rem;box-shadow:var(--shadow);
+}
+.skill-row:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(14,165,160,0.1)}
+.list-title{font-family:var(--font-head);font-size:0.875rem;font-weight:700;color:var(--txt)}
+.list-id{font-family:var(--font-mono);font-size:0.67rem;color:var(--txt-muted)}
+.list-meta{font-size:0.74rem;color:var(--txt-muted);white-space:nowrap}
+.list-desc{font-size:0.77rem;color:var(--txt-sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
+
+/* ── Modal ── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(15,23,42,0.5);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;padding:1rem;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--r-xl);width:100%;max-width:800px;
+  max-height:92vh;overflow-y:auto;
+  box-shadow:var(--shadow-lg);
+  animation:modalIn 0.26s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.modal-header{
+  padding:1.5rem 1.75rem 1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;
+  position:sticky;top:0;background:#fff;z-index:10;
+}
+.modal-close{
+  width:32px;height:32px;border-radius:8px;background:#f1f5f9;border:1px solid var(--border);
+  color:var(--txt-sec);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;transition:var(--trans);flex-shrink:0;
+}
+.modal-close:hover{background:#fee2e2;border-color:#fca5a5;color:var(--red)}
+.modal-body{padding:1.5rem 1.75rem}
+.modal-title{font-family:var(--font-head);font-size:1.35rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:4px;color:var(--txt)}
+.modal-id{font-family:var(--font-mono);font-size:0.74rem;color:var(--accent);font-weight:500}
+
+.modal-stats{
+  display:flex;gap:1rem;margin:1rem 0 1.5rem;flex-wrap:wrap;
+}
+.modal-stat{
+  flex:1;min-width:80px;text-align:center;
+  background:#f8fafc;border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:12px 8px;
+}
+.modal-stat-val{font-family:var(--font-head);font-size:1.5rem;font-weight:800;color:var(--txt);display:block}
+.modal-stat-label{font-size:0.7rem;color:var(--txt-muted);margin-top:2px}
+
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.detail-item{background:#f8fafc;border-radius:var(--r);padding:12px 14px;border:1px solid var(--border)}
+.detail-item.full{grid-column:1/-1}
+.detail-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--txt-muted);margin-bottom:5px}
+.detail-val{font-size:0.875rem;color:var(--txt);line-height:1.55}
+.detail-val a{color:var(--accent);text-decoration:none}
+.detail-val a:hover{text-decoration:underline}
+.detail-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+
+.btn-download{
+  font-family:var(--font-body);font-size:0.875rem;font-weight:600;
+  background:var(--accent);color:#fff;border:none;
+  border-radius:var(--r);padding:11px 22px;cursor:pointer;
+  display:flex;align-items:center;gap:8px;transition:var(--trans);
+  box-shadow:0 2px 8px rgba(14,165,160,0.25);
+}
+.btn-download:hover{background:var(--accent-dim);transform:translateY(-1px)}
+.modal-actions{display:flex;gap:10px;margin-bottom:1.5rem;align-items:center}
+
+/* ── Ratings ── */
+.ratings-section{border-top:1px solid var(--border);padding-top:1.5rem}
+.section-title{font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--txt)}
+.rating-summary{
+  display:flex;gap:1.5rem;align-items:center;margin-bottom:1.25rem;
+  background:#f8fafc;padding:1rem 1.25rem;border-radius:var(--r-lg);border:1px solid var(--border);flex-wrap:wrap;
+}
+.rating-big{font-family:var(--font-head);font-size:2.8rem;font-weight:800;color:var(--txt);line-height:1}
+.rating-stars-big{display:flex;gap:3px;margin-top:4px;font-size:1.05rem}
+.rating-count{font-size:0.78rem;color:var(--txt-muted);margin-top:3px}
+.rating-bars{flex:1;min-width:140px}
+.rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.rating-bar-label{font-size:0.7rem;color:var(--txt-muted);width:14px;text-align:right}
+.rating-bar-bg{flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+.rating-bar-fill{height:100%;background:#f59e0b;border-radius:3px;transition:width 0.7s ease}
+.rating-bar-count{font-size:0.67rem;color:var(--txt-muted);width:18px}
+
+.write-review{
+  background:#f8fafc;border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:1.25rem;
+}
+.write-review-label{font-size:0.8rem;font-weight:600;color:var(--txt-sec);margin-bottom:8px}
+.star-select{display:flex;gap:5px;margin-bottom:10px}
+.star-btn{
+  font-size:1.4rem;cursor:pointer;color:#d1d5db;
+  background:none;border:none;padding:0;transition:color 0.1s,transform 0.1s;line-height:1;
+}
+.star-btn:hover,.star-btn.lit{color:#f59e0b;transform:scale(1.15)}
+.review-input{
+  background:#fff;border:1.5px solid var(--border);border-radius:var(--r);
+  padding:10px 12px;color:var(--txt);font-family:var(--font-body);font-size:0.875rem;
+  width:100%;resize:none;height:72px;line-height:1.5;transition:var(--trans);margin-bottom:10px;
+}
+.review-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,165,160,0.1)}
+.btn-review-submit{
+  font-size:0.8rem;font-weight:600;background:var(--accent-soft);color:var(--accent);
+  border:1px solid rgba(14,165,160,0.2);border-radius:var(--r);padding:7px 18px;cursor:pointer;transition:var(--trans);
+}
+.btn-review-submit:hover{background:var(--accent);color:#fff}
+
+.review-item{padding:1rem 0;border-bottom:1px solid var(--border)}
+.review-item:last-child{border-bottom:none}
+.review-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.reviewer{display:flex;align-items:center;gap:8px}
+.review-name{font-size:0.84rem;font-weight:600;color:var(--txt)}
+.review-date{font-size:0.7rem;color:var(--txt-muted)}
+.review-stars{display:flex;gap:2px;font-size:0.78rem}
+.review-text{font-size:0.82rem;color:var(--txt-sec);line-height:1.6}
+
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--txt-muted);grid-column:1/-1}
+.empty-state-icon{font-size:2.5rem;margin-bottom:1rem;opacity:0.4}
+
+@media(max-width:640px){
+  .form-grid{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:1fr}
+  .skill-row{grid-template-columns:1fr}
+  .site-header{padding:0 1rem;gap:1rem}
+  .page-inner{padding:1.5rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">
+    <div class="logo-icon">🤖</div>
+    SCM Claude Skill Hub
+  </div>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="switchPage('apply')">📝 申請 Skill</button>
+    <button class="nav-tab" onclick="switchPage('browse')">🔍 查詢 Skill</button>
+  </nav>
+  <div class="header-badge" id="skill-count-badge">0 Skills</div>
+</header>
+
+<!-- ══ PAGE: APPLY ══ -->
+<div class="page active" id="page-apply">
+  <div class="page-inner">
+    <h1 class="page-title">申請 <span>新 Skill</span></h1>
+    <p class="page-sub">填寫以下欄位，送出後 Skill 將上架供全公司同仁使用。</p>
+
+    <!-- 基本資訊 -->
+    <div class="form-card">
+      <div class="form-section-title"><span>①</span>基本資訊</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Function<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">這個 Skill 主要是供哪一個 Function 使用</div></div></label>
+          <select class="form-select" id="f-function">
+            <option value="" disabled selected>— 請選擇 Function —</option>
+            <option>Supply Chain Planning</option><option>Procurement</option>
+            <option>Manufacturing</option><option>Finance</option>
+            <option>IT</option><option>HR</option>
+            <option>Quality</option><option>Engineering</option>
+            <option>Sales &amp; Marketing</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Site<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">這個 Skill 主要是供哪一個 Site 使用</div></div></label>
+          <select class="form-select" id="f-site">
+            <option value="" disabled selected>— 請選擇 Site —</option>
+            <option>Taipei HQ</option><option>Taoyuan</option>
+            <option>Zhongli</option><option>Kunshan</option>
+            <option>Wuhan</option><option>All Sites</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Skill Path<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">Link to download the Skill（下載連結或路徑）</div></div></label>
+          <input class="form-input" type="url" id="f-path" placeholder="https://... 或 \\server\share\skill">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Skill ID<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">這個 Skill 的唯一識別 ID（系統自動產生）</div></div></label>
+          <input class="form-input readonly-id" type="text" id="f-id" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Creator<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">建立此 Skill 的人員姓名 / 工號</div></div></label>
+          <input class="form-input" type="text" id="f-creator" placeholder="e.g. Teresa Wang / A12345">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Skill Description<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">這個 Skill 的主要用途與功能描述</div></div></label>
+          <textarea class="form-textarea" id="f-desc" placeholder="請說明此 Skill 能做什麼、解決什麼問題…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分類標籤 -->
+    <div class="form-card">
+      <div class="form-section-title"><span>②</span>分類標籤</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Output Type<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">輸出類型，例如：報表彙整、文件比對、郵件草稿</div></div></label>
+          <div class="tag-dropdown" id="output-dropdown">
+            <div class="tag-dropdown-trigger" onclick="toggleDropdown('output-dropdown')">
+              <span>＋ 新增 Output Type</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="tag-dropdown-menu" id="output-dropdown-menu">
+              <div class="tag-dropdown-option" onclick="addTag('output','報表彙整')">報表彙整</div>
+              <div class="tag-dropdown-option" onclick="addTag('output','文件比對')">文件比對</div>
+              <div class="tag-dropdown-option" onclick="addTag('output','郵件草稿')">郵件草稿</div>
+              <div class="tag-dropdown-option" onclick="addTag('output','數據分析')">數據分析</div>
+              <div class="tag-dropdown-option" onclick="addTag('output','通知提醒')">通知提醒</div>
+              <div class="tag-dropdown-option" onclick="addTag('output','格式轉換')">格式轉換</div>
+              <div class="tag-dropdown-option" onclick="addTag('output','預測模型')">預測模型</div>
+            </div>
+          </div>
+          <div class="tags-display" id="output-tags"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tool Type<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">工具類型，例如：Excel 整理、Outlook 搜尋、SharePoint</div></div></label>
+          <div class="tag-dropdown" id="tool-dropdown">
+            <div class="tag-dropdown-trigger" onclick="toggleDropdown('tool-dropdown')">
+              <span>＋ 新增 Tool Type</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="tag-dropdown-menu" id="tool-dropdown-menu">
+              <div class="tag-dropdown-option" onclick="addTag('tool','Excel 整理')">Excel 整理</div>
+              <div class="tag-dropdown-option" onclick="addTag('tool','Outlook 搜尋')">Outlook 搜尋</div>
+              <div class="tag-dropdown-option" onclick="addTag('tool','SharePoint')">SharePoint</div>
+              <div class="tag-dropdown-option" onclick="addTag('tool','Teams')">Teams</div>
+              <div class="tag-dropdown-option" onclick="addTag('tool','SAP/ERP')">SAP/ERP</div>
+              <div class="tag-dropdown-option" onclick="addTag('tool','Kinaxis')">Kinaxis</div>
+              <div class="tag-dropdown-option" onclick="addTag('tool','Power BI')">Power BI</div>
+              <div class="tag-dropdown-option" onclick="addTag('tool','Python Script')">Python Script</div>
+            </div>
+          </div>
+          <div class="tags-display" id="tool-tags"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 整合資訊 -->
+    <div class="form-card">
+      <div class="form-section-title"><span>③</span>整合資訊</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">MCP<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">Update MCP list if this Skill uses any MCP server</div></div></label>
+          <input class="form-input" type="text" id="f-mcp" placeholder="e.g. notion-mcp, google-drive-mcp（逗號分隔）">
+        </div>
+        <div class="form-group">
+          <label class="form-label">API<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">Update API list if this Skill calls any external API</div></div></label>
+          <input class="form-input" type="text" id="f-api" placeholder="e.g. Anthropic API, SAP REST API（逗號分隔）">
+        </div>
+      </div>
+    </div>
+
+    <!-- 附件文件 -->
+    <div class="form-card">
+      <div class="form-section-title"><span>④</span>附件文件</div>
+      <div class="form-grid">
+
+        <!-- SOP -->
+        <div class="form-group">
+          <label class="form-label">Skill Operation SOP<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">如何使用此 Skill？是否須設定 Path？請上傳操作說明文件。</div></div></label>
+          <textarea class="form-textarea tall" id="f-sop-text" placeholder="請描述操作步驟、注意事項、是否需要設定 Path…"></textarea>
+          <div style="margin-top:8px">
+            <div style="font-size:0.73rem;color:var(--txt-muted);margin-bottom:6px;font-weight:500">附加檔案（選填）</div>
+            <div class="file-upload" id="sop-upload">
+              <input type="file" accept=".pdf,.docx,.xlsx,.md,.txt" onchange="handleFile('sop',this)">
+              <div class="file-upload-icon">📄</div>
+              <div class="file-upload-text">點擊上傳或拖曳附件</div>
+              <div class="file-upload-hint">PDF, DOCX, XLSX, MD, TXT（最大 10MB）</div>
+            </div>
+            <div class="file-preview" id="sop-preview"><span>📎</span><span id="sop-name"></span></div>
+          </div>
+        </div>
+
+        <!-- Use Case -->
+        <div class="form-group">
+          <label class="form-label">Use Case<div class="tooltip-wrap"><button class="tooltip-btn">?</button><div class="tooltip-box">舉例用在什麼專案或情境中，可上傳佐證文件或截圖。</div></div></label>
+          <textarea class="form-textarea tall" id="f-uc-text" placeholder="請描述實際應用的專案或情境，例如：用於 AWS Q1 需求預測週報整合…"></textarea>
+          <div style="margin-top:8px">
+            <div style="font-size:0.73rem;color:var(--txt-muted);margin-bottom:6px;font-weight:500">附加檔案（選填）</div>
+            <div class="file-upload" id="uc-upload">
+              <input type="file" accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg" onchange="handleFile('uc',this)">
+              <div class="file-upload-icon">📋</div>
+              <div class="file-upload-text">點擊上傳或拖曳附件</div>
+              <div class="file-upload-hint">PDF, DOCX, PPTX, 圖片（最大 10MB）</div>
+            </div>
+            <div class="file-preview" id="uc-preview"><span>📎</span><span id="uc-name"></span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="resetForm()">清除重填</button>
+      <button class="btn-submit" onclick="submitForm()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        送出申請
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: BROWSE ══ -->
+<div class="page" id="page-browse">
+  <div class="page-inner">
+    <h1 class="page-title">探索 <span>Skills</span></h1>
+    <p class="page-sub">搜尋、篩選並下載公司內部已上架的 Claude Skills。</p>
+
+    <div class="search-top">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="搜尋 Skill 名稱、描述、Creator…" id="search-input" oninput="filterSkills()">
+      </div>
+      <select class="sort-select" onchange="sortSkills(this.value)">
+        <option value="date-desc">最新建立</option>
+        <option value="date-asc">最早建立</option>
+        <option value="downloads">下載量</option>
+        <option value="rating">評分</option>
+        <option value="name">名稱 A-Z</option>
+      </select>
+      <div class="view-toggle">
+        <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="卡片檢視">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="view-btn" id="btn-list" onclick="setView('list')" title="列表檢視">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <span class="filter-label">Function：</span>
+      <button class="filter-btn active" onclick="setFilter('function','all',this)">全部</button>
+      <button class="filter-btn" onclick="setFilter('function','Supply Chain Planning',this)">SCP</button>
+      <button class="filter-btn" onclick="setFilter('function','Procurement',this)">Procurement</button>
+      <button class="filter-btn" onclick="setFilter('function','Finance',this)">Finance</button>
+      <button class="filter-btn" onclick="setFilter('function','IT',this)">IT</button>
+      <button class="filter-btn" onclick="setFilter('function','Manufacturing',this)">Manufacturing</button>
+      <button class="filter-btn" onclick="setFilter('function','Engineering',this)">Engineering</button>
+    </div>
+    <div class="filter-bar">
+      <span class="filter-label">Output：</span>
+      <button class="filter-btn active" onclick="setFilter('output','all',this)">全部</button>
+      <button class="filter-btn" onclick="setFilter('output','報表彙整',this)">報表彙整</button>
+      <button class="filter-btn" onclick="setFilter('output','文件比對',this)">文件比對</button>
+      <button class="filter-btn" onclick="setFilter('output','郵件草稿',this)">郵件草稿</button>
+      <button class="filter-btn" onclick="setFilter('output','數據分析',this)">數據分析</button>
+      <button class="filter-btn" onclick="setFilter('output','通知提醒',this)">通知提醒</button>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-item">共 <span id="result-count">0</span> 個 Skills</div>
+      <div class="stat-item">總下載 <span id="total-downloads">0</span> 次</div>
+    </div>
+    <div id="skills-container" class="skills-grid"></div>
+  </div>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-overlay" id="skill-modal" onclick="closeModalOnBg(event)">
+  <div class="modal" id="modal-inner">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="m-title">—</div>
+        <div class="modal-id" id="m-id">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-stats">
+        <div class="modal-stat"><span class="modal-stat-val" id="m-downloads">0</span><div class="modal-stat-label">總下載量</div></div>
+        <div class="modal-stat"><span class="modal-stat-val" id="m-rating">—</span><div class="modal-stat-label">平均評分</div></div>
+        <div class="modal-stat"><span class="modal-stat-val" id="m-reviews">0</span><div class="modal-stat-label">評論數</div></div>
+        <div class="modal-stat"><span class="modal-stat-val" id="m-version">v1.0</span><div class="modal-stat-label">版本號</div></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-download" onclick="downloadSkill()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下載 Skill
+        </button>
+        <button class="btn-secondary" onclick="copyPath()">📋 複製路徑</button>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-label">Function</div><div class="detail-val" id="m-function">—</div></div>
+        <div class="detail-item"><div class="detail-label">Site</div><div class="detail-val" id="m-site">—</div></div>
+        <div class="detail-item"><div class="detail-label">Creator</div><div class="detail-val" id="m-creator">—</div></div>
+        <div class="detail-item"><div class="detail-label">建立日期</div><div class="detail-val" id="m-date">—</div></div>
+        <div class="detail-item full"><div class="detail-label">Description</div><div class="detail-val" id="m-desc">—</div></div>
+        <div class="detail-item"><div class="detail-label">MCP</div><div class="detail-val" id="m-mcp">—</div></div>
+        <div class="detail-item"><div class="detail-label">API</div><div class="detail-val" id="m-api">—</div></div>
+        <div class="detail-item full"><div class="detail-label">Output Type</div><div class="detail-tags" id="m-output-tags"></div></div>
+        <div class="detail-item full"><div class="detail-label">Tool Type</div><div class="detail-tags" id="m-tool-tags"></div></div>
+        <div class="detail-item full"><div class="detail-label">Skill Operation SOP</div><div class="detail-val" id="m-sop" style="white-space:pre-wrap"></div></div>
+        <div class="detail-item full"><div class="detail-label">Use Case</div><div class="detail-val" id="m-usecase" style="white-space:pre-wrap"></div></div>
+        <div class="detail-item full"><div class="detail-label">Skill Path</div><div class="detail-val"><a href="#" id="m-path" target="_blank">—</a></div></div>
+      </div>
+
+      <div class="ratings-section">
+        <div class="section-title">評分與評論</div>
+        <div class="rating-summary">
+          <div>
+            <div class="rating-big" id="m-avg-rating">—</div>
+            <div class="rating-stars-big" id="m-stars-big"></div>
+            <div class="rating-count" id="m-rating-count">0 則評論</div>
+          </div>
+          <div class="rating-bars" id="rating-bars"></div>
+        </div>
+        <div class="write-review">
+          <div class="write-review-label">撰寫評論</div>
+          <div class="star-select" id="star-select">
+            <button class="star-btn" data-val="1" onclick="selectStar(1)">★</button>
+            <button class="star-btn" data-val="2" onclick="selectStar(2)">★</button>
+            <button class="star-btn" data-val="3" onclick="selectStar(3)">★</button>
+            <button class="star-btn" data-val="4" onclick="selectStar(4)">★</button>
+            <button class="star-btn" data-val="5" onclick="selectStar(5)">★</button>
+          </div>
+          <textarea class="review-input" id="review-text" placeholder="分享你的使用心得…"></textarea>
+          <button class="btn-review-submit" onclick="submitReview()">送出評論</button>
+        </div>
+        <div id="reviews-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-icon">✓</div>
+  <span id="toast-msg">完成！</span>
+</div>
+
+<script>
+let selectedRating=0,currentSkillId=null;
+let activeFilters={function:'all',output:'all'};
+let currentView='grid';
+let selectedOutputTags=[],selectedToolTags=[];
+const ICONS=['⚡','📊','📧','🔍','📋','🧩','🛠','📈','🔄','📦','🤖','📌'];
+
+let skills=[
+  {id:'SKL-2024-0001',version:'v2.1',title:'Demand Forecast Analyzer',
+   function:'Supply Chain Planning',site:'All Sites',creator:'Teresa Wang',
+   path:'https://sharepoint.company.com/skills/demand-forecast',
+   desc:'自動分析客戶預測數據，偵測異常波動並生成例外報表，支援 AWS / META / Microsoft 帳號資料整合。',
+   mcp:'notion-mcp, google-drive-mcp',api:'Anthropic API, Kinaxis REST API',
+   outputTags:['報表彙整','數據分析'],toolTags:['Kinaxis','Excel 整理','Power BI'],
+   downloads:342,rating:4.6,
+   sopText:'1. 將 SKILL.md 放置於指定路徑\n2. 在 Claude 中輸入 "/demand-forecast" 啟動\n3. 貼上預測數據或上傳 Excel 檔案\n4. 等待系統分析並輸出報表\n\n注意：首次使用需設定 Kinaxis API Token，請聯絡 IT。',
+   ucText:'用於每週 AWS、META、Microsoft 三大客戶的需求預測例外管理，自動標出 ±20% 以上的異常料號，取代原本 4 小時的人工比對流程。',
+   sopFile:'Demand_Forecast_SOP_v2.pdf',ucFile:'Q1_AWS_Case_Study.pptx',
+   reviews:[
+     {name:'Alex Chen',date:'2025-05-10',rating:5,text:'非常實用！幫我省了每週 3 小時的手動工作。'},
+     {name:'Linda Ho',date:'2025-04-28',rating:4,text:'功能完整，路徑設定稍微複雜，但 SOP 文件寫得很清楚。'},
+   ],createdAt:'2024-09-15',icon:'📈'},
+  {id:'SKL-2024-0002',version:'v1.3',title:'Outlook Email Drafter',
+   function:'Supply Chain Planning',site:'Taipei HQ',creator:'Kevin Liu',
+   path:'https://sharepoint.company.com/skills/email-drafter',
+   desc:'根據料況異常或交期變更自動產生中英文郵件草稿，支援多語系，可自訂語氣與格式模板。',
+   mcp:'',api:'Anthropic API, Microsoft Graph API',
+   outputTags:['郵件草稿'],toolTags:['Outlook 搜尋','Excel 整理'],
+   downloads:218,rating:4.2,
+   sopText:'啟動後將料況異常資訊貼入或描述情況，選擇語系（中文/英文）與語氣（正式/友善），Claude 自動產生郵件草稿供確認後寄出。',
+   ucText:'應用於向供應商確認交期延誤時的溝通郵件，每次省約 15 分鐘起草時間。',
+   sopFile:'Email_Drafter_SOP.docx',ucFile:'',
+   reviews:[{name:'Amy Tsai',date:'2025-05-01',rating:4,text:'寫郵件效率大幅提升，英文草稿品質很好。'}],
+   createdAt:'2024-11-02',icon:'📧'},
+  {id:'SKL-2025-0001',version:'v1.0',title:'BOM Comparator',
+   function:'Engineering',site:'Taoyuan',creator:'Jason Huang',
+   path:'https://sharepoint.company.com/skills/bom-compare',
+   desc:'比對兩個版本的 BOM 文件，自動標示新增、刪除、變更的料號，輸出 Excel 差異報告。',
+   mcp:'',api:'Anthropic API',
+   outputTags:['文件比對','報表彙整'],toolTags:['Excel 整理','SharePoint'],
+   downloads:156,rating:4.8,
+   sopText:'上傳舊版與新版 BOM Excel 或貼上數據，系統自動比對並輸出差異清單，包含新增料號（綠色）、刪除料號（紅色）、數量變更（黃色）。',
+   ucText:'ECO 版本更新期間使用，比對新舊 BOM 差異，大幅節省工程師手動核對時間，一次比對約可節省 1.5 小時。',
+   sopFile:'BOM_Comparator_SOP.pdf',ucFile:'ECO_UseCase.pdf',
+   reviews:[
+     {name:'Mary Su',date:'2025-03-15',rating:5,text:'ECO 期間超好用，節省大量人工比對時間！'},
+     {name:'Peter Ko',date:'2025-02-20',rating:5,text:'準確率非常高，強烈推薦。'},
+   ],createdAt:'2025-01-10',icon:'🔍'},
+  {id:'SKL-2025-0002',version:'v1.1',title:'MRP Exception Reporter',
+   function:'Supply Chain Planning',site:'Zhongli',creator:'Chris Wang',
+   path:'https://sharepoint.company.com/skills/mrp-exception',
+   desc:'每日自動擷取 SAP MRP 例外訊息，分類整理後推送到 Teams 頻道，並產生摘要報表。',
+   mcp:'teams-mcp',api:'Anthropic API, SAP REST API',
+   outputTags:['報表彙整','通知提醒'],toolTags:['SAP/ERP','Teams'],
+   downloads:289,rating:4.4,
+   sopText:'1. 每日早上 08:30 自動執行\n2. 從 SAP MRP 擷取前一日例外清單\n3. 依嚴重程度分類（緊急/一般/低）\n4. 推送 Teams 訊息並附 Excel 附件\n\n需設定 SAP RFC 連線與 Teams Webhook URL。',
+   ucText:'取代每天早會前的人工 SAP 查詢，讓 Planner 在收到 Teams 通知後直接了解待處理事項，每日省約 30 分鐘。',
+   sopFile:'MRP_Reporter_SOP.pdf',ucFile:'Daily_MRP_Report_Sample.xlsx',
+   reviews:[{name:'Eric Lin',date:'2025-04-05',rating:4,text:'整合 Teams 通知很方便，不需要每天登入 SAP 查看。'}],
+   createdAt:'2025-02-28',icon:'📦'},
+  {id:'SKL-2025-0003',version:'v1.0',title:'PO Approval Summarizer',
+   function:'Procurement',site:'Kunshan',creator:'Shelly Cheng',
+   path:'https://sharepoint.company.com/skills/po-summary',
+   desc:'彙整待審核的採購單，自動生成摘要表格並附上關鍵指標（金額、交期、風險），輔助主管快速決策。',
+   mcp:'',api:'Anthropic API, SAP REST API',
+   outputTags:['報表彙整'],toolTags:['SAP/ERP','Excel 整理'],
+   downloads:97,rating:4.1,
+   sopText:'匯入待審 PO 清單（Excel 或 SAP 輸出），Skill 自動計算總金額、標示高風險供應商、彙整交期資訊，產出一頁式摘要供主管審閱。',
+   ucText:'用於每週採購審核會議前的資料準備，讓主管在 5 分鐘內掌握所有待審 PO 的關鍵資訊。',
+   sopFile:'',ucFile:'PO_Approval_Demo.pptx',
+   reviews:[],createdAt:'2025-04-01',icon:'📋'},
+  {id:'SKL-2025-0004',version:'v1.2',title:'SharePoint Doc Indexer',
+   function:'IT',site:'Taipei HQ',creator:'Tom Chen',
+   path:'https://sharepoint.company.com/skills/doc-indexer',
+   desc:'自動爬取指定 SharePoint 資料夾的文件，建立語意索引，讓 Claude 能快速回答文件相關問題。',
+   mcp:'sharepoint-mcp',api:'Anthropic API, Microsoft Graph API',
+   outputTags:['文件比對','數據分析'],toolTags:['SharePoint','Power BI'],
+   downloads:74,rating:3.9,
+   sopText:'1. 設定 SharePoint 目標資料夾 URL\n2. 執行索引建立（首次約需 10-30 分鐘）\n3. 完成後即可透過 Claude 查詢文件內容\n\n注意：需要 IT 協助設定 Microsoft Graph API 權限。',
+   ucText:'應用於快速搜尋 SOP 文件庫，員工可直接用中文提問找到對應規範，無需逐一開啟 PDF 查閱。',
+   sopFile:'Doc_Indexer_SOP.pdf',ucFile:'',
+   reviews:[{name:'Nina Wu',date:'2025-05-15',rating:4,text:'索引速度快，但首次設定需要 IT 協助。'}],
+   createdAt:'2025-05-01',icon:'🔄'},
+];
+
+let filteredSkills=[...skills];
+
+function genSkillId(){
+  const yr=new Date().getFullYear();
+  const n=String(skills.filter(s=>s.id.includes(String(yr))).length+1).padStart(4,'0');
+  return `SKL-${yr}-${n}`;
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function starsHtml(r){
+  return [1,2,3,4,5].map(i=>`<span style="color:${i<=Math.round(r)?'#f59e0b':'#d1d5db'}">★</span>`).join('');
+}
+function avatarColor(name){
+  const c=['#0ea5a0','#6366f1','#f59e0b','#8b5cf6','#ef4444'];
+  return c[name.charCodeAt(0)%c.length];
+}
+function initials(name){return name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}
+
+function switchPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-tab')[p==='apply'?0:1].classList.add('active');
+  if(p==='browse') renderSkills();
+}
+
+function toggleDropdown(id){
+  const menu=document.getElementById(id+'-menu');
+  menu.classList.toggle('open');
+}
+function addTag(type,val){
+  const arr=type==='output'?selectedOutputTags:selectedToolTags;
+  if(arr.includes(val))return;
+  arr.push(val);renderFormTags(type);
+  document.getElementById((type==='output'?'output':'tool')+'-dropdown-menu').classList.remove('open');
+}
+function removeTag(type,val){
+  if(type==='output')selectedOutputTags=selectedOutputTags.filter(t=>t!==val);
+  else selectedToolTags=selectedToolTags.filter(t=>t!==val);
+  renderFormTags(type);
+}
+function renderFormTags(type){
+  const container=document.getElementById(type+'-tags');
+  const arr=type==='output'?selectedOutputTags:selectedToolTags;
+  const cls=type==='output'?'':'amber';
+  container.innerHTML=arr.map(t=>`<span class="tag-chip ${cls}">${t}<span class="remove" onclick="removeTag('${type}','${t}')">✕</span></span>`).join('');
+}
+function handleFile(type,input){
+  if(!input.files.length)return;
+  const name=input.files[0].name;
+  const preview=document.getElementById(type+'-preview');
+  document.getElementById(type+'-name').textContent=name;
+  preview.style.display='flex';
+}
+
+function submitForm(){
+  const fn=document.getElementById('f-function').value;
+  const site=document.getElementById('f-site').value;
+  const desc=document.getElementById('f-desc').value;
+  if(!fn||!site){showToast('請先選擇 Function 和 Site');return}
+  if(!desc){showToast('請填寫 Skill Description');return}
+  const title=desc.split('\n')[0].slice(0,45)||(desc.length>45?desc.slice(0,45)+'…':desc);
+  const newSkill={
+    id:document.getElementById('f-id').value,version:'v1.0',
+    title:title,function:fn,site:site,
+    creator:document.getElementById('f-creator').value||'Anonymous',
+    path:document.getElementById('f-path').value||'#',
+    desc:desc,
+    mcp:document.getElementById('f-mcp').value,
+    api:document.getElementById('f-api').value,
+    outputTags:[...selectedOutputTags],toolTags:[...selectedToolTags],
+    downloads:0,rating:0,reviews:[],
+    sopText:document.getElementById('f-sop-text').value,
+    ucText:document.getElementById('f-uc-text').value,
+    sopFile:'',ucFile:'',
+    createdAt:new Date().toISOString().slice(0,10),
+    icon:ICONS[Math.floor(Math.random()*ICONS.length)],
+  };
+  skills.unshift(newSkill);
+  showToast('Skill 申請成功！已上架至查詢頁面 ✓');
+  resetForm();updateBadge();
+}
+function resetForm(){
+  ['f-function','f-site'].forEach(id=>document.getElementById(id).selectedIndex=0);
+  ['f-path','f-creator','f-desc','f-mcp','f-api','f-sop-text','f-uc-text'].forEach(id=>document.getElementById(id).value='');
+  selectedOutputTags=[];selectedToolTags=[];
+  renderFormTags('output');renderFormTags('tool');
+  document.getElementById('sop-preview').style.display='none';
+  document.getElementById('uc-preview').style.display='none';
+  document.getElementById('f-id').value=genSkillId();
+}
+function updateBadge(){
+  document.getElementById('skill-count-badge').textContent=skills.length+' Skills';
+}
+
+function renderSkills(){filteredSkills=[...skills];applyFilters();updateBadge()}
+function applyFilters(){
+  const q=(document.getElementById('search-input')||{value:''}).value.toLowerCase();
+  filteredSkills=skills.filter(s=>{
+    const mFn=activeFilters.function==='all'||s.function===activeFilters.function;
+    const mOut=activeFilters.output==='all'||s.outputTags.includes(activeFilters.output);
+    const mQ=!q||s.title.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q)||s.creator.toLowerCase().includes(q)||s.id.toLowerCase().includes(q);
+    return mFn&&mOut&&mQ;
+  });
+  renderContainer();
+}
+function renderContainer(){
+  const container=document.getElementById('skills-container');
+  document.getElementById('result-count').textContent=filteredSkills.length;
+  document.getElementById('total-downloads').textContent=filteredSkills.reduce((a,s)=>a+s.downloads,0).toLocaleString();
+  if(!filteredSkills.length){
+    container.innerHTML='<div class="empty-state"><div class="empty-state-icon">🔍</div><p>找不到符合條件的 Skill</p></div>';
+    return;
+  }
+  if(currentView==='grid') renderGrid(container);
+  else renderList(container);
+}
+function renderGrid(container){
+  container.className='skills-grid';
+  const iconColors=[
+    {bg:'rgba(14,165,160,0.1)',c:'#0ea5a0'},
+    {bg:'rgba(245,158,11,0.1)',c:'#d97706'},
+    {bg:'rgba(99,102,241,0.1)',c:'#6366f1'},
+    {bg:'rgba(239,68,68,0.1)',c:'#ef4444'},
+  ];
+  container.innerHTML=filteredSkills.map((s,i)=>{
+    const ic=iconColors[i%iconColors.length];
+    const avg=s.reviews.length?(s.reviews.reduce((a,r)=>a+r.rating,0)/s.reviews.length).toFixed(1):'—';
+    return `<div class="skill-card" onclick="openSkill('${s.id}')">
+      <div class="card-top">
+        <div class="skill-icon" style="background:${ic.bg}">${s.icon}</div>
+        <div class="card-badges">
+          ${s.outputTags.slice(0,1).map(t=>`<span class="badge badge-teal">${t}</span>`).join('')}
+          ${s.toolTags.slice(0,1).map(t=>`<span class="badge badge-amber">${t}</span>`).join('')}
+        </div>
+      </div>
+      <div class="card-title">${s.title}</div>
+      <div class="card-id">${s.id} · ${s.version}</div>
+      <div class="card-desc">${s.desc}</div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <div class="card-meta-item">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            ${s.downloads}
+          </div>
+          <div class="card-meta-item" style="color:#d97706">★ ${avg}</div>
+        </div>
+        <div class="card-creator">
+          <div class="avatar-sm" style="background:${avatarColor(s.creator)}20;color:${avatarColor(s.creator)}">${initials(s.creator)}</div>
+          ${s.creator.split(' ')[0]}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderList(container){
+  container.className='skills-list';
+  container.innerHTML=filteredSkills.map(s=>{
+    const avg=s.reviews.length?(s.reviews.reduce((a,r)=>a+r.rating,0)/s.reviews.length).toFixed(1):'—';
+    return `<div class="skill-row" onclick="openSkill('${s.id}')">
+      <div style="width:36px;height:36px;border-radius:9px;background:rgba(14,165,160,0.1);display:flex;align-items:center;justify-content:center;font-size:1rem;">${s.icon}</div>
+      <div><div class="list-title">${s.title}</div><div class="list-id">${s.id} · ${s.function}</div></div>
+      <div class="list-desc">${s.desc}</div>
+      <div class="list-meta" style="color:#d97706">★ ${avg}</div>
+      <div class="list-meta">⬇ ${s.downloads}</div>
+      <div class="list-meta">${s.createdAt}</div>
+    </div>`;
+  }).join('');
+}
+function filterSkills(){applyFilters()}
+function sortSkills(val){
+  if(val==='downloads') filteredSkills.sort((a,b)=>b.downloads-a.downloads);
+  else if(val==='rating') filteredSkills.sort((a,b)=>b.rating-a.rating);
+  else if(val==='date-desc') filteredSkills.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+  else if(val==='date-asc') filteredSkills.sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
+  else if(val==='name') filteredSkills.sort((a,b)=>a.title.localeCompare(b.title));
+  renderContainer();
+}
+function setView(v){
+  currentView=v;
+  document.getElementById('btn-grid').classList.toggle('active',v==='grid');
+  document.getElementById('btn-list').classList.toggle('active',v==='list');
+  renderContainer();
+}
+function setFilter(type,val,btn){
+  activeFilters[type]=val;
+  btn.closest('.filter-bar').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');applyFilters();
+}
+
+function openSkill(id){
+  const s=skills.find(x=>x.id===id);
+  if(!s)return;
+  currentSkillId=id;
+  document.getElementById('m-title').textContent=s.title;
+  document.getElementById('m-id').textContent=s.id+' · '+s.version;
+  document.getElementById('m-downloads').textContent=s.downloads.toLocaleString();
+  const avg=s.reviews.length?(s.reviews.reduce((a,r)=>a+r.rating,0)/s.reviews.length).toFixed(1):'—';
+  document.getElementById('m-rating').textContent=avg;
+  document.getElementById('m-reviews').textContent=s.reviews.length;
+  document.getElementById('m-version').textContent=s.version;
+  document.getElementById('m-function').textContent=s.function||'—';
+  document.getElementById('m-site').textContent=s.site||'—';
+  document.getElementById('m-creator').textContent=s.creator||'—';
+  document.getElementById('m-date').textContent=s.createdAt||'—';
+  document.getElementById('m-desc').textContent=s.desc||'—';
+  document.getElementById('m-mcp').textContent=s.mcp||'（未使用）';
+  document.getElementById('m-api').textContent=s.api||'（未使用）';
+  document.getElementById('m-path').textContent=s.path||'—';
+  document.getElementById('m-path').href=s.path||'#';
+  document.getElementById('m-sop').textContent=(s.sopText?s.sopText:'')+(s.sopFile?'\n\n📎 附件：'+s.sopFile:'') || '（未填寫）';
+  document.getElementById('m-usecase').textContent=(s.ucText?s.ucText:'')+(s.ucFile?'\n\n📎 附件：'+s.ucFile:'') || '（未填寫）';
+  document.getElementById('m-output-tags').innerHTML=s.outputTags.length?s.outputTags.map(t=>`<span class="tag-chip">${t}</span>`).join(''):'<span style="color:var(--txt-muted);font-size:0.8rem">—</span>';
+  document.getElementById('m-tool-tags').innerHTML=s.toolTags.length?s.toolTags.map(t=>`<span class="tag-chip amber">${t}</span>`).join(''):'<span style="color:var(--txt-muted);font-size:0.8rem">—</span>';
+  document.getElementById('m-avg-rating').textContent=avg;
+  document.getElementById('m-stars-big').innerHTML=avg!=='—'?starsHtml(parseFloat(avg)):'';
+  document.getElementById('m-rating-count').textContent=s.reviews.length+' 則評論';
+  renderRatingBars(s);renderReviews(s);
+  selectedRating=0;
+  document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('lit'));
+  document.getElementById('review-text').value='';
+  document.getElementById('skill-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('skill-modal').classList.remove('open');
+  document.body.style.overflow='';currentSkillId=null;
+}
+function closeModalOnBg(e){if(e.target===document.getElementById('skill-modal'))closeModal()}
+
+function renderRatingBars(s){
+  const counts=[0,0,0,0,0];
+  s.reviews.forEach(r=>counts[r.rating-1]++);
+  const max=Math.max(...counts,1);
+  document.getElementById('rating-bars').innerHTML=
+    [5,4,3,2,1].map(star=>`
+      <div class="rating-bar-row">
+        <span class="rating-bar-label">${star}</span>
+        <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:${(counts[star-1]/max*100).toFixed(0)}%"></div></div>
+        <span class="rating-bar-count">${counts[star-1]}</span>
+      </div>`).join('');
+}
+function renderReviews(s){
+  const c=document.getElementById('reviews-list');
+  if(!s.reviews.length){c.innerHTML='<div style="color:var(--txt-muted);font-size:0.82rem;padding:0.75rem 0">還沒有評論，成為第一個吧！</div>';return}
+  c.innerHTML=s.reviews.map(r=>`
+    <div class="review-item">
+      <div class="review-top">
+        <div class="reviewer">
+          <div class="avatar-sm" style="background:${avatarColor(r.name)}20;color:${avatarColor(r.name)}">${initials(r.name)}</div>
+          <span class="review-name">${r.name}</span>
+          <div class="review-stars">${starsHtml(r.rating)}</div>
+        </div>
+        <span class="review-date">${r.date}</span>
+      </div>
+      <div class="review-text">${r.text}</div>
+    </div>`).join('');
+}
+function selectStar(n){
+  selectedRating=n;
+  document.querySelectorAll('.star-btn').forEach(b=>b.classList.toggle('lit',parseInt(b.dataset.val)<=n));
+}
+function submitReview(){
+  if(!currentSkillId)return;
+  if(!selectedRating){showToast('請先選擇星數');return}
+  const text=document.getElementById('review-text').value.trim();
+  if(!text){showToast('請輸入評論內容');return}
+  const s=skills.find(x=>x.id===currentSkillId);
+  s.reviews.unshift({name:'你',date:new Date().toISOString().slice(0,10),rating:selectedRating,text});
+  const avg=s.reviews.reduce((a,r)=>a+r.rating,0)/s.reviews.length;
+  s.rating=Math.round(avg*10)/10;
+  renderRatingBars(s);renderReviews(s);
+  document.getElementById('m-rating').textContent=avg.toFixed(1);
+  document.getElementById('m-reviews').textContent=s.reviews.length;
+  document.getElementById('m-avg-rating').textContent=avg.toFixed(1);
+  document.getElementById('m-stars-big').innerHTML=starsHtml(avg);
+  document.getElementById('m-rating-count').textContent=s.reviews.length+' 則評論';
+  document.getElementById('review-text').value='';selectedRating=0;
+  document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('lit'));
+  showToast('評論已送出 ✓');
+}
+function downloadSkill(){
+  if(!currentSkillId)return;
+  const s=skills.find(x=>x.id===currentSkillId);
+  s.downloads++;
+  document.getElementById('m-downloads').textContent=s.downloads.toLocaleString();
+  const blob=new Blob([`Skill ID: ${s.id}\nTitle: ${s.title}\nVersion: ${s.version}\nPath: ${s.path}\nDescription: ${s.desc}\n\nSOP:\n${s.sopText||'—'}\n\nUse Case:\n${s.ucText||'—'}`],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=s.id+'_info.txt';a.click();
+  showToast(`已下載 ${s.title} ✓`);
+  renderContainer();
+}
+function copyPath(){
+  if(!currentSkillId)return;
+  const s=skills.find(x=>x.id===currentSkillId);
+  navigator.clipboard.writeText(s.path||'').catch(()=>{});
+  showToast('路徑已複製到剪貼簿 ✓');
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('f-id').value=genSkillId();
+  updateBadge();
+  document.addEventListener('click',(e)=>{
+    if(!e.target.closest('.tag-dropdown')){
+      document.querySelectorAll('.tag-dropdown-menu.open').forEach(m=>m.classList.remove('open'));
+    }
+  });
+});
+</script>
+</body>
+</html>
